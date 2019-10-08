@@ -37,12 +37,20 @@ public class ExtendedFurnaceScreen extends ContainerScreen<ExtendedFurnanceConta
     int x1 = 184;
     int x2 = x1 - 8;
     int y1 = 31;
+    double scaledbar = 64 * this.container.te.energyStorage.getEnergyStored()/10000d;
+    int y2 = y1 + 100 - (int) scaledbar;
+    int y3 = (int)scaledbar;
+
+    double scaledprogress = 24d * this.container.te.progress / this.container.te.progresstotal;
+    this.blit(i + 79, j + 35, 176, 14, (int)scaledprogress, 16);
+
     //energy bar
     GlStateManager.color3f(1,0,0);
     this.blit(i + 9, j + 10, x1, y1, 8, 64);
-    this.blit(i + 9, j + 10, x2, y1, 8, 64*(this.container.te.energyStorage.getEnergyStored()/10000));
+    this.blit(i + 9, j + 10 + 64 - y3, x2, y1, 8, y3);
     GlStateManager.color3f(0,1,0);
     this.blit(i + 160, j + 10, x1, y1, 8, 64);
+    this.minecraft.fontRenderer.drawString(this.container.te.energyStorage.getEnergyStored()+"",i+80,j+25,0x404040);
   }
 
   @Override

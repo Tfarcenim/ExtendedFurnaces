@@ -1,5 +1,6 @@
 package com.tfar.examplemod;
 
+import com.tfar.examplemod.network.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.gui.ScreenManager;
@@ -39,22 +40,14 @@ public class ExtendedFurnaces
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
     // Register the doClientStuff method for modloading
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-
-    // Register ourselves for server and other game events we are interested in
-    MinecraftForge.EVENT_BUS.register(this);
   }
 
   private void setup(final FMLCommonSetupEvent event) {
+    PacketHandler.registerMessages(MODID);
   }
 
   private void doClientStuff(final FMLClientSetupEvent event) {
     ScreenManager.registerFactory(RegistryObjects.container_type, ExtendedFurnaceScreen::new);
-  }
-  // You can use SubscribeEvent and let the Event Bus discover methods to call
-  @SubscribeEvent
-  public void onServerStarting(FMLServerStartingEvent event) {
-    // do something when the server starts
-    //LOGGER.info("HELLO from server starting");
   }
 
   // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD

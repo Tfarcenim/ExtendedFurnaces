@@ -37,7 +37,7 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   public ItemStackHandler output = new ItemStackHandler();
   public LazyOptional<IItemHandler> outputLazyOptional = LazyOptional.of(() -> output);
 
-  MyEnergyStorage energyStorage = new MyEnergyStorage(MAXENERGY, RFPERTICK);
+  ExtendedFurnaceEnergyStorage energyStorage = new ExtendedFurnaceEnergyStorage(MAXENERGY, RFPERTICK,this);
   public LazyOptional<IEnergyStorage> energyLazyOptional = LazyOptional.of(() -> energyStorage);
 
   private ITextComponent customName;
@@ -46,35 +46,37 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   protected ItemStack failedMatch = ItemStack.EMPTY;
 
   int progress = 0;
+  int progresstotal = 1;
 
   public ExtendedFurnaceBlockEntity() {
     super(ExtendedFurnaces.RegistryObjects.tile_type);
     this.recipeType = IRecipeType.BLASTING;
   }
 
-  public void changeRecipeType(){
+  public void changeRecipeType() {
 
   }
 
   @Override
   public void tick() {
-    if (!world.isRemote)
-    if (energyStorage.getEnergyStored() < RFPERTICK) {
-     // setState(FurnaceState.NOPOWER);
-      if (System.currentTimeMillis()%50 == 0)System.out.println("no power");
-      return;
-    }
-
-    if (progress > 0) {
-      //setState(FurnaceState.WORKING);
-      energyStorage.consumePower(RFPERTICK);
-      progress--;
-      if (progress <= 0) {
-        attemptSmelt();
+    if (!world.isRemote) {
+      if (energyStorage.getEnergyStored() < RFPERTICK) {
+        // setState(FurnaceState.NOPOWER);
+        if (System.currentTimeMillis() % 50 == 0) System.out.println("no power");
+        return;
       }
-      markDirty();
-    } else {
-      startSmelt();
+
+      if (curRecipe != null && progress < curRecipe.getCookTime()) {
+        //setState(FurnaceState.WORKING);
+        energyStorage.consumePower(RFPERTICK);
+        progress++;
+        if (progress >= curRecipe.getCookTime()) {
+          attemptSmelt();
+        }
+        markDirty();
+      } else {
+        startSmelt();
+      }
     }
   }
 
@@ -84,12 +86,14 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   private static final int OUTPUT_SLOTS = 1;
 
   private void attemptSmelt() {
-    for (int i = 0 ; i < INPUT_SLOTS ; i++) {
+    for (int i = 0; i < INPUT_SLOTS; i++) {
       ItemStack result = getResult(input.getStackInSlot(i));
       if (!result.isEmpty()) {
         // This copy is very important!(
         if (insertOutput(result.copy(), false)) {
           input.extractItem(i, 1, false);
+          progress = 0;
+          if (input.getStackInSlot(i).isEmpty())curRecipe = null;
           break;
         }
       }
@@ -97,7 +101,7 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   }
 
   private boolean insertOutput(ItemStack result, boolean simulate) {
-    for (int i = 0 ; i < OUTPUT_SLOTS ; i++) {
+    for (int i = 0; i < OUTPUT_SLOTS; i++) {
       ItemStack remaining = output.insertItem(i, result, simulate);
       if (remaining.isEmpty()) {
         return true;
@@ -107,12 +111,12 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   }
 
   private void startSmelt() {
-    for (int i = 0 ; i < INPUT_SLOTS ; i++) {
+    for (int i = 0; i < INPUT_SLOTS; i++) {
       ItemStack result = getResult(input.getStackInSlot(i));
       if (!result.isEmpty()) {
         if (insertOutput(result.copy(), true)) {
           //setState(FurnaceState.WORKING);
-          progress = 200;
+          progress = 0;
           markDirty();
           return;
         }
@@ -124,8 +128,7 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
 
   private ItemStack getResult(ItemStack stackInSlot) {
     AbstractCookingRecipe irecipe = getRecipe(stackInSlot);
-    if (irecipe != null)return irecipe.getRecipeOutput();
-    //return FurnaceRecipes.instance().getSmeltingResult(stackInSlot);
+    if (irecipe != null) return irecipe.getRecipeOutput();
     return ItemStack.EMPTY;
   }
 
@@ -135,7 +138,10 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
     else {
       AbstractCookingRecipe rec = (AbstractCookingRecipe) world.getRecipeManager().getRecipe(this.recipeType, new RecipeWrapper(this.input), this.world).orElse(null);
       if (rec == null) failedMatch = input;
-      else failedMatch = ItemStack.EMPTY;
+      else {
+        failedMatch = ItemStack.EMPTY;
+        progresstotal = rec.getCookTime();
+      }
       return curRecipe = rec;
     }
   }
@@ -144,13 +150,16 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   @Nonnull
   @Override
   public CompoundNBT write(CompoundNBT tag) {
-    CompoundNBT compound = this.input.serializeNBT();
-    tag.put("inv", compound);
+    CompoundNBT inputTag = this.input.serializeNBT();
+    tag.put("inv", inputTag);
     if (this.customName != null) {
       tag.putString("CustomName", ITextComponent.Serializer.toJson(this.customName));
     }
-    compound.putInt("progress", progress);
-    compound.putInt("energy", energyStorage.getEnergyStored());    return super.write(tag);
+    tag.putInt("progress", progress);
+    tag.putInt("progresstotal", progresstotal);
+    CompoundNBT energyTag = this.energyStorage.serializeNBT();
+    tag.put("energyinv", energyTag);
+    return super.write(tag);
   }
 
   @Override
@@ -161,7 +170,9 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
       this.customName = ITextComponent.Serializer.fromJson(tag.getString("CustomName"));
     }
     progress = tag.getInt("progress");
-    energyStorage.setEnergy(tag.getInt("energy"));
+    progresstotal = tag.getInt("progresstotal");
+    CompoundNBT energyinv = tag.getCompound("energyinv");
+    energyStorage.deserializeNBT(energyinv);
     super.read(tag);
   }
 
@@ -179,26 +190,26 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
                     super.getCapability(cap, side);
   }
 
-
+  @Override
+  public void markDirty() {
+    super.markDirty();
+    this.world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 2);
+  }
 
   @Nullable
   @Override
   public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-    return new ExtendedFurnanceContainer(p_createMenu_1_,world,pos,p_createMenu_2_);
+    return new ExtendedFurnanceContainer(p_createMenu_1_, world, pos, p_createMenu_2_);
   }
 
   @Override
   public CompoundNBT getUpdateTag() {
-return this.write(new CompoundNBT());
+    return this.write(new CompoundNBT());
   }
 
   @Override
-  public SUpdateTileEntityPacket getUpdatePacket()
-  {
-    CompoundNBT nbt = new CompoundNBT();
-    this.write(nbt);
-
-    return new SUpdateTileEntityPacket(getPos(), 1, nbt);
+  public SUpdateTileEntityPacket getUpdatePacket() {
+    return new SUpdateTileEntityPacket(getPos(), 1, getUpdateTag());
   }
 
   @Override
