@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "rrr",
+    "rir",
+    "rrr"
+  ],
+  "key": {
+    "i": {
+      "tag": "forge:ingots/iron"
+    },
+    "r": {
+      "item": "minecraft:experience_bottle"
+    }
+  },
+  "result": {
+    "item": "extendedfurnace:xp_upgrade"
+  }
+}

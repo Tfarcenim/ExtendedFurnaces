@@ -1,6 +1,6 @@
-package com.tfar.examplemod.network;
+package com.tfar.extendedfurnace.network;
 
-import com.tfar.examplemod.ExtendedFurnaces;
+import com.tfar.extendedfurnace.ExtendedFurnaces;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -18,9 +18,9 @@ public class PacketHandler {
             buffer -> new C2SRecipeModePacket(),
             C2SRecipeModePacket::handle);
 
-    INSTANCE.registerMessage(id++, S2CExtendedFurnaceSyncPacket.class,
-            S2CExtendedFurnaceSyncPacket::encode,
-            S2CExtendedFurnaceSyncPacket::new,
-            S2CExtendedFurnaceSyncPacket::handle);
+    INSTANCE.registerMessage(id++, C2SXpDumpPacket.class,
+            (msg,buffer) -> {},
+            buffer -> new C2SXpDumpPacket(),
+            C2SXpDumpPacket::handle);
   }
 }

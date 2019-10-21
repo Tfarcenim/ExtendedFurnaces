@@ -1,4 +1,4 @@
-package com.tfar.examplemod;
+package com.tfar.extendedfurnace;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -12,36 +12,41 @@ public class ExtendedFurnaceEnergyStorage extends EnergyStorage implements INBTS
   public TileEntity blockEntity;
 
   public ExtendedFurnaceEnergyStorage(int capacity, int maxReceive, TileEntity blockEntity) {
-    super(capacity, maxReceive, 0);
+    super(capacity, maxReceive, Integer.MAX_VALUE);
     this.blockEntity = blockEntity;
-  }
-
-  public void setEnergy(int energy) {
-    this.energy = energy;
-    onEnergyChanged();
-  }
-
-  public void consumePower(int energy) {
-    if (energy == 0 || this.energy == 0)return;
-    this.energy -= energy;
-    if (this.energy < 0) {
-      this.energy = 0;
-    }
-    onEnergyChanged();
   }
 
   @Override
   public CompoundNBT serializeNBT() {
     CompoundNBT compound = new CompoundNBT();
+    compound.putInt("capacity", capacity);
     compound.putInt("energy", energy);
     return compound;
   }
 
   @Override
   public void deserializeNBT(@Nonnull CompoundNBT compound) {
-    energy = compound.contains("energy") ? compound.getInt("energy") : 0;
+    capacity = compound.getInt("capacity");
+    energy = compound.getInt("energy");
   }
 
+  @Override
+  public int receiveEnergy(int maxReceive, boolean simulate) {
+    int received = super.receiveEnergy(maxReceive, simulate);
+    if (received > 0 && !simulate)onEnergyChanged();
+    return received;
+  }
+
+  @Override
+  public int extractEnergy(int maxExtract, boolean simulate) {
+    int extracted = super.extractEnergy(maxExtract, simulate);
+    if (extracted > 0 && !simulate)onEnergyChanged();
+    return extracted;
+  }
+
+  public void scaleCapacity(int upgrades){
+    capacity = (int) (10000 * Math.pow(1.2,upgrades));
+  }
 
   public void onEnergyChanged(){
     this.blockEntity.getWorld().notifyBlockUpdate(blockEntity.getPos(),blockEntity.getBlockState(),blockEntity.getBlockState(),3);

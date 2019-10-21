@@ -1,4 +1,4 @@
-package com.tfar.examplemod.inventory;
+package com.tfar.extendedfurnace.inventory;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -6,8 +6,8 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ExtendedFurnaceOutputSlot extends SlotItemHandler {
-  public ExtendedFurnaceOutputSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+public class OutputSlot extends SlotItemHandler {
+  public OutputSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
     super(itemHandler, index, xPosition, yPosition);
   }
 

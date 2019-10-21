@@ -1,6 +1,6 @@
-package com.tfar.examplemod.network;
+package com.tfar.extendedfurnace.network;
 
-import com.tfar.examplemod.ExtendedFurnanceContainer;
+import com.tfar.extendedfurnace.ExtendedFurnanceContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -16,7 +16,7 @@ public class C2SRecipeModePacket {
     ctx.get().enqueueWork(() -> {
       Container container = player.openContainer;
       if (container instanceof ExtendedFurnanceContainer) {
-        ((ExtendedFurnanceContainer) container).te.changeRecipeType();
+        ((ExtendedFurnanceContainer) container).te.changeRecipeType(false);
       }
     });
     ctx.get().setPacketHandled(true);

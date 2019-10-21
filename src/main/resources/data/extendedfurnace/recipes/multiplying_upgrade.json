@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "iii",
+    "ifi",
+    "iri"
+  ],
+  "key": {
+    "i": {
+      "item": "extendedfurnace:efficiency_upgrade"
+    },
+    "f": {
+      "tag": "forge:ingots/iron"
+    },
+    "r": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "extendedfurnace:multiplying_upgrade"
+  }
+}
