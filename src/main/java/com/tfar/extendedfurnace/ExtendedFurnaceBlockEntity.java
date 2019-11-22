@@ -1,6 +1,8 @@
 package com.tfar.extendedfurnace;
 
 import com.tfar.extendedfurnace.inventory.AutomationSensitiveItemStackHandler;
+import com.tfar.extendedfurnace.inventory.ExtendedFurnaceEnergyStorage;
+import com.tfar.extendedfurnace.inventory.OutputOnlyFluidTank;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -67,7 +69,7 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   ExtendedFurnaceEnergyStorage energyStorage = new ExtendedFurnaceEnergyStorage(10000, Integer.MAX_VALUE, this);
   public LazyOptional<IEnergyStorage> energyLazyOptional = LazyOptional.of(() -> energyStorage);
 
-  public FluidTank fluidStorage = new FluidTank(Integer.MAX_VALUE, fluidStack -> fluidStack.getFluid() == ExtendedFurnaces.xp.get());
+  public OutputOnlyFluidTank fluidStorage = new OutputOnlyFluidTank(Integer.MAX_VALUE);
   public LazyOptional<IFluidHandler> fluidLazyOptional = LazyOptional.of(() -> fluidStorage);
 
   private ITextComponent customName;
@@ -158,7 +160,7 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   }
 
   private void finish() {
-    // This copy is very important!(
+    // This copy is very important!
     ItemStack result = curRecipe.getCraftingResult(new RecipeWrapper(this.inv)).copy();
       if (!result.isEmpty()) {
         int existingcount = this.inv.getStackInSlot(1).getCount();
@@ -180,7 +182,7 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
         inv.getStackInSlot(0).shrink(totalsmelts);
 
           progress -= (curRecipe.getCookTime() * totalsmelts);
-          this.fluidStorage.fill(new FluidStack(ExtendedFurnaces.xp.get(),(int)Math.ceil(Math.pow(upgrades.getStackInSlot(2).getCount()+1,2) * totalsmelts * curRecipe.getExperience() * 10))
+          this.fluidStorage.add(new FluidStack(ExtendedFurnaces.xp.get(),(int)Math.ceil(Math.pow(upgrades.getStackInSlot(2).getCount()+1,2) * totalsmelts * curRecipe.getExperience() * 10))
                   , IFluidHandler.FluidAction.EXECUTE);
           if (inv.getStackInSlot(0).isEmpty()) curRecipe = null;
       }
@@ -259,10 +261,7 @@ public class ExtendedFurnaceBlockEntity extends TileEntity implements INamedCont
   @Nonnull
   @Override
   public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-    if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-      return getItemHandlerLazyOptional(side).cast();
-    }
-    else return cap == CapabilityEnergy.ENERGY ? energyLazyOptional.cast() :
+    return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? getItemHandlerLazyOptional(side).cast() : cap == CapabilityEnergy.ENERGY ? energyLazyOptional.cast() :
             cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? fluidLazyOptional.cast() :
                     super.getCapability(cap, side);
   }

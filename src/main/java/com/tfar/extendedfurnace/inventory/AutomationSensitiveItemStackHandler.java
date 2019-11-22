@@ -5,7 +5,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.ItemStackHandler;
 
 /**
- * borrowed from AA
+ * borrowed from Actually Additions
  */
 public class AutomationSensitiveItemStackHandler extends ItemStackHandler {
 

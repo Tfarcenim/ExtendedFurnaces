@@ -1,4 +1,4 @@
-package com.tfar.extendedfurnace;
+package com.tfar.extendedfurnace.inventory;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;

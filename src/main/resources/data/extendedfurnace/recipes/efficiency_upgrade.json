@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "rrr",
+    " r ",
     "rir",
-    "rrr"
+    " r "
   ],
   "key": {
     "i": {
       "tag": "forge:ingots/iron"
     },
     "r": {
-      "item": "minecraft:glowstone"
+      "item": "minecraft:glowstone_dust"
     }
   },
   "result": {
-    "item": "extendedfurnace:speed_upgrade"
+    "item": "extendedfurnace:efficiency_upgrade"
   }
 }

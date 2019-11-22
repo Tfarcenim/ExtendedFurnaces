@@ -4,6 +4,7 @@ import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -46,17 +48,21 @@ public class ExtendedFurnaceBlock extends AbstractFurnaceBlock {
   }
 
   @Override
-  public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+  public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
     if (state.getBlock() != newState.getBlock()) {
-      TileEntity tileentity = worldIn.getTileEntity(pos);
+      TileEntity tileentity = world.getTileEntity(pos);
       if (tileentity instanceof ExtendedFurnaceBlockEntity) {
-        dropItems((ExtendedFurnaceBlockEntity) tileentity, worldIn, pos);
-
-        //worldIn.updateComparatorOutputLevel(pos, this);
+        ExtendedFurnaceBlockEntity extendedFurnaceBlockEntity = (ExtendedFurnaceBlockEntity)tileentity;
+        dropItems((ExtendedFurnaceBlockEntity) tileentity, world, pos);
+        ExperienceOrbEntity xp = new ExperienceOrbEntity(world,pos.getX(),pos.getY(),pos.getZ(),
+                extendedFurnaceBlockEntity.fluidStorage.getFluidAmount()/10);
+        if (xp.xpValue != 0) {
+          world.addEntity(xp);
+        }
       }
 
       if (state.hasTileEntity() && state.getBlock() != newState.getBlock()) {
-        worldIn.removeTileEntity(pos);
+        world.removeTileEntity(pos);
       }
     }
   }

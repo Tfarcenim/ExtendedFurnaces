@@ -1,14 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "rrr",
+    " r ",
     "rir",
-    "rrr"
+    " r "
   ],
   "key": {
     "i": {
       "tag": "forge:ingots/iron"
-    }
+    },
     "r": {
       "item": "minecraft:redstone"
     }
