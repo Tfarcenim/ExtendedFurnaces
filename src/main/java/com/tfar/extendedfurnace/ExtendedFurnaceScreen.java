@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExtendedFurnaceScreen extends ContainerScreen<ExtendedFurnanceContainer> {
+
   public ExtendedFurnaceScreen(ExtendedFurnanceContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
     super(screenContainer, inv, titleIn);
     this.xSize+= 22;
@@ -23,7 +24,7 @@ public class ExtendedFurnaceScreen extends ContainerScreen<ExtendedFurnanceConta
   @Override
   protected void init() {
     super.init();
-    addButton(new ToggleImageButton(guiLeft + 54,guiTop + 52,20,20,(b) ->{
+    addButton(new ToggleImageButton(guiLeft + 54,guiTop + 52,20,20,b ->{
       ((ToggleImageButton)b).toggle();
       container.te.changeRecipeType(true);
       PacketHandler.INSTANCE.sendToServer(new C2SRecipeModePacket());

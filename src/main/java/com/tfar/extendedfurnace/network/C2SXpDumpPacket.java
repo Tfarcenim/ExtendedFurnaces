@@ -20,13 +20,15 @@ public class C2SXpDumpPacket {
     ctx.get().enqueueWork(() -> {
       Container container = player.openContainer;
       if (container instanceof ExtendedFurnanceContainer) {
-        ExtendedFurnanceContainer extendedFurnanceContainer = (ExtendedFurnanceContainer)container;
+        ExtendedFurnanceContainer extendedFurnanceContainer = (ExtendedFurnanceContainer) container;
         BlockPos pos = player.getPosition();
-        ExperienceOrbEntity xp = new ExperienceOrbEntity(player.world,pos.getX(),pos.getY(),pos.getZ(),
-                extendedFurnanceContainer.te.fluidStorage.getFluidAmount()/10);
-        if (xp.xpValue != 0) {
+        int xpAmount = extendedFurnanceContainer.te.fluidStorage.getFluidAmount() / 10;
+        if (xpAmount > 0) {
+          int orbSize = Math.min(xpAmount, Short.MAX_VALUE);
+          ExperienceOrbEntity xp = new ExperienceOrbEntity(player.world, pos.getX(), pos.getY(), pos.getZ(),
+                  orbSize);
           player.world.addEntity(xp);
-          ((ExtendedFurnanceContainer) container).te.fluidStorage.drain(10 * xp.xpValue, IFluidHandler.FluidAction.EXECUTE);
+          ((ExtendedFurnanceContainer) container).te.fluidStorage.drain(10 * orbSize, IFluidHandler.FluidAction.EXECUTE);
         }
       }
     });
