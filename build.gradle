@@ -91,8 +91,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}" //21
 
-    runtimeOnly fg.deobf("curse.maven:flopper:2810619")
-    runtimeOnly fg.deobf("curse.maven:cyclops-core:2810604")
+  //  runtimeOnly fg.deobf("curse.maven:flopper:2810619")
+   // runtimeOnly fg.deobf("curse.maven:cyclops-core:2810604")
     
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")

@@ -1,6 +1,6 @@
 package com.tfar.extendedfurnace;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.tfar.extendedfurnace.network.C2SRecipeModePacket;
 import com.tfar.extendedfurnace.network.C2SXpDumpPacket;
 import com.tfar.extendedfurnace.network.PacketHandler;
@@ -57,10 +57,10 @@ public class ExtendedFurnaceScreen extends ContainerScreen<ExtendedFurnanceConta
     this.blit(i + 79, j + 35, 198, 0, (int)scaledprogress, 16);
 
     //energy bar
-    GlStateManager.color3f(1,0,0);
+    RenderSystem.color3f(1,0,0);
     this.blit(i + 9, j + 10, x1, y1, 8, 64);
     this.blit(i + 9, j + 10 + 64 - y3, x2, y1, 8, y3);
-    GlStateManager.color3f(0,1,0);
+    RenderSystem.color3f(0,1,0);
     this.blit(i + 160, j + 10, x1, y1, 8, 64);
 
     //font.drawString(container.te.getRequiredPower() +" FE/t",guiLeft + 72,guiTop +25,0x404040);

@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class ExtendedFurnanceContainer extends Container {
 
   public ExtendedFurnaceBlockEntity te;
@@ -50,6 +52,7 @@ public class ExtendedFurnanceContainer extends Container {
     return true;
   }
 
+  @Nonnull
   @Override
   public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
     ItemStack itemstack = ItemStack.EMPTY;
@@ -66,10 +69,11 @@ public class ExtendedFurnanceContainer extends Container {
           return ItemStack.EMPTY;
         }
       } else if (index < 6) {
-        if (!this.mergeItemStack(itemstack1, 7, 39, false)) {
+        if (!this.mergeItemStack(itemstack1, 6, 39, false)) {
           return ItemStack.EMPTY;
         }
-      } else if (!this.mergeItemStack(itemstack1, 0, 7, false)) {
+      } else if (!this.mergeItemStack(itemstack1, 2, 6, false) &&
+              !this.mergeItemStack(itemstack1, 0, 2, false)) {
         return ItemStack.EMPTY;
       }
 

@@ -1,7 +1,6 @@
 package com.tfar.extendedfurnace.network;
 
 import com.tfar.extendedfurnace.ExtendedFurnanceContainer;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
